@@ -1,0 +1,40 @@
+- name: Create build directory
+  file:
+    state: directory
+    path: "{{ playbook_dir }}/{{ ec2_build_dir }}"
+
+- name: Run troposphere to generate template
+  troposphere_ec2:
+    ec2_role_name: "{{ ec2_role_name }}"
+    ec2_role_policy_document: "{{ ec2_role_policy_document }}"
+    ec2_role_policy_name: "{{ ec2_role_policy_name | default(omit, true) }}"
+    ec2_role_path: "{{ ec2_role_path | default(omit, true) }}"
+    ec2_role_profile_name: "{{ ec2_role_profile_name }}"
+    ec2_user_data_script_file: "{{ ec2_user_data_script_file | default(omit, true) }}"
+    ec2_assign_public_ip: "{{ ec2_assign_public_ip | bool }}"
+    ec2_create_volume: "{{ ec2_create_volume | bool }}"
+    ec2_vol_size: "{{ ec2_vol_size }}"
+    ec2_vol_type: "{{ ec2_vol_type }}"
+  register: result
+
+- name: Write template to file
+  copy:
+    content: "{{ result['Result'] }}"
+    dest: "{{ playbook_dir }}/{{ ec2_build_dir }}/{{ ec2_template_name }}-raw"
+
+- name: Clean up template
+  shell: "python -m json.tool {{ playbook_dir }}/{{ ec2_build_dir }}/{{ ec2_template_name }}-raw > {{ playbook_dir }}/{{ ec2_build_dir }}/{{ ec2_template_name }}"
+
+- name: Create CloudFormation stack
+  cloudformation:
+    stack_name: "{{ ec2_stack_name }}"
+    region: "{{ ec2_region }}"
+    template: "{{ playbook_dir }}/{{ ec2_build_dir }}/{{ ec2_template_name }}"
+    template_parameters:
+      KeyName: "{{ ec2_key_name }}"
+      InstanceType: "{{ ec2_instance_type }}"
+      AMI: "{{ ec2_ami }}"
+      SubnetId: "{{ ec2_subnet_id }}"
+      SecurityGroupIds: "{{ ec2_sgs }}"
+    security_token: "{{ ec2_security_token | default(omit,true) }}"
+    tags: "{{ ec2_tags }}"

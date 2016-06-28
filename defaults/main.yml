@@ -1,0 +1,11 @@
+ec2_build_dir: "build"
+ec2_template_name: "ec2.json"
+ec2_region: "us-west-2"
+ec2_role_profile_name: "EC2InstanceProfile"
+ec2_role_name: "EC2Role"
+ec2_role_policy_name: "EC2RolePolicy"
+ec2_role_path: /
+ec2_create_volume: False
+ec2_assign_public_ip: False
+ec2_vol_size: 8
+ec2_vol_type: 'gp2'
