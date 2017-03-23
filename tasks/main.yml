@@ -38,3 +38,4 @@
       SecurityGroupIds: "{{ ec2_sgs }}"
     state: "{{ ec2_stack_state }}"
     tags: "{{ ec2_tags }}"
+  register: ec2_stack
