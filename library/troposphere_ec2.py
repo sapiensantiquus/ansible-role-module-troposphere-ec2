@@ -63,6 +63,8 @@ def create_instance(template,parameters=None,user_data_script=None,assign_public
     if user_data:
         ec2_instance.UserData=user_data
 
+    return ec2_instance
+
 def create_volume(template,vol_type='gp2',vol_size=8,delete_on_term=None):
     dev = ec2.EBSBlockDevice(
         VolumeType=vol_type,
@@ -188,8 +190,16 @@ def main():
   if role_policy_document:
       profile = create_iam_policy(template,role_name,role_policy_name,role_path,role_policy_document,role_profile_name)
 
-  create_instance(template,parameters=parameters,user_data_script=user_data_script,assign_public_ip=assign_public_ip,volume=vol,profile=profile)
 
+  ec2_instance = create_instance(template,parameters=parameters,user_data_script=user_data_script,assign_public_ip=assign_public_ip,volume=vol,profile=profile)
+
+  template.add_output([
+    Output(
+        "InstanceId",
+        Description="InstanceId of the newly created EC2 instance",
+        Value=Ref(ec2_instance),
+    )
+  ])
 
   module.exit_json(
         Changed=False,

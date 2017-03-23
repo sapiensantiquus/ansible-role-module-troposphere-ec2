@@ -1,0 +1,2 @@
+- include: ec2.yml
+- include: ec2.yml ec2_stack_state=absent

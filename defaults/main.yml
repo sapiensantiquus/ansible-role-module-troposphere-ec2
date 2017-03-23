@@ -9,3 +9,4 @@ ec2_create_volume: False
 ec2_assign_public_ip: False
 ec2_vol_size: 8
 ec2_vol_type: 'gp2'
+ec2_stack_state: present

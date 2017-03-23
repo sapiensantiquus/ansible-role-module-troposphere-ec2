@@ -1,0 +1,15 @@
+- hosts: test
+  vars:
+    ec2_stack_name: "ansible-role-module-troposphere-ec2-test"
+    ec2_role_path: "/testing/"
+    ec2_instance_type: "c4.xlarge"
+    ec2_user_data_script_file: "test.sh"
+    ec2_create_volume: True
+    ec2_vol_size: 100
+    ec2_tags:
+      "Name": "{{ ec2_stack_name }}"
+    ec2_assign_public_ip: True
+    ec2_role_policy_document: " { \"Version\": \"2012-10-17\",\"Statement\": [ { \"Effect\": \"Allow\", \"Action\" : [ \"s3:GetObject\", \"s3:PutObject\", \"s3:ListBucket\" ], \"Resource\" : \"arn:aws:s3:::mgage-elasticsearch-snapshots/*\" },  { \"Effect\": \"Allow\", \"Action\" : [ \"s3:ListBucket\" ], \"Resource\" : \"arn:aws:s3:::mgage-elasticsearch-snapshots\" } ] }"
+
+  roles:
+    - role: ansible-role-module-troposphere-ec2

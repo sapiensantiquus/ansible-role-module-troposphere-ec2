@@ -36,5 +36,5 @@
       AMI: "{{ ec2_ami }}"
       SubnetId: "{{ ec2_subnet_id }}"
       SecurityGroupIds: "{{ ec2_sgs }}"
-    security_token: "{{ ec2_security_token | default(omit,true) }}"
+    state: "{{ ec2_stack_state }}"
     tags: "{{ ec2_tags }}"

@@ -1,0 +1,24 @@
+FROM ubuntu:16.04
+RUN apt-get update && apt-get install -y \
+      gcc \
+      git \
+      python-dev \
+      python-pip \
+      libffi-dev \
+      libssl-dev \
+			zip && \
+    pip install -U distribute boto ansible==2.2.1 virtualenv awscli psycopg2
+    # ansible 2.1.0 fail: https://github.com/ansible/ansible/issues/16015
+ARG ANSIBLE_OPTIONS
+ARG TEST_LABEL
+ARG TEST_LABEL_KEY
+ARG TEST_TAG
+ARG GIT_COMMIT=unknown
+LABEL $TEST_LABEL_KEY=$TEST_LABEL
+LABEL git-commit=$GIT_COMMIT
+LABEL TEST_TAG=$TEST_TAG
+ADD tests /tmp/playbook
+ADD . /tmp/playbook/roles/$TEST_LABEL
+WORKDIR /tmp/playbook
+RUN pip install -r test_requirements.pip && \
+    ansible-playbook $ANSIBLE_OPTIONS -i inventory test.yml -e ec2_subnet_id=subnet-2d29365a -e ec2_ami=ami-d4b75ab4 -e ec2_key_name=dev-mgage-ansible -e ec2_sgs=sg-4adb452d
